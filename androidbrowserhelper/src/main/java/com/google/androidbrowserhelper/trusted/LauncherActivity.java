@@ -155,19 +155,24 @@ public class LauncherActivity extends Activity {
 
         mMetadata = LauncherActivityMetadata.parse(this);
 
-        if (splashScreenNeeded()) {
-            mSplashScreenStrategy = new PwaWrapperSplashScreenStrategy(this,
-                    mMetadata.splashImageDrawableId,
-                    getColorCompat(mMetadata.splashScreenBackgroundColorId),
-                    getSplashImageScaleType(),
-                    getSplashImageTransformationMatrix(),
-                    mMetadata.splashScreenFadeOutDurationMillis,
-                    mMetadata.fileProviderAuthority);
-        }
+        mBrowserWasLaunched = true;
+        final Intent intent = WebViewFallbackActivity.createLaunchIntent(this, getLaunchingUrl(),
+                LauncherActivityMetadata.parse(this));
+        startActivity(intent);
 
-        if (shouldLaunchImmediately()) {
-            launchTwa();
-        }
+//        if (splashScreenNeeded()) {
+//            mSplashScreenStrategy = new PwaWrapperSplashScreenStrategy(this,
+//                    mMetadata.splashImageDrawableId,
+//                    getColorCompat(mMetadata.splashScreenBackgroundColorId),
+//                    getSplashImageScaleType(),
+//                    getSplashImageTransformationMatrix(),
+//                    mMetadata.splashScreenFadeOutDurationMillis,
+//                    mMetadata.fileProviderAuthority);
+//        }
+//
+//        if (shouldLaunchImmediately()) {
+//            launchTwa();
+//        }
     }
 
     /**
