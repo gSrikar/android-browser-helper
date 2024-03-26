@@ -49,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WebViewFallbackActivity extends Activity {
+public class WebViewFallbackActivity extends Activity implements EventInterface {
     private static final String TAG = WebViewFallbackActivity.class.getSimpleName();
     private static final String KEY_PREFIX =
             "com.google.browser.examples.twawebviewfallback.WebViewFallbackActivity.";
@@ -134,6 +134,9 @@ public class WebViewFallbackActivity extends Activity {
 
         WebSettings webSettings = mWebView.getSettings();
         setupWebSettings(webSettings);
+
+        // Add Javascript Interface
+        mWebView.addJavascriptInterface(new WebViewInterface(this), "PermissionAndroid");
 
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -326,6 +329,19 @@ public class WebViewFallbackActivity extends Activity {
         webSettings.setDatabaseEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             webSettings.setMediaPlaybackRequiresUserGesture(false);
+        }
+    }
+
+    @Override
+    public void syncData(String data) {
+        if (Boolean.parseBoolean(data)) {
+            // Gave consent
+            // Request Permissions
+            Log.d(TAG, "Request Permission");
+            // TODO: Request permission
+        } else {
+            // Consent for permissions denied
+            Log.d(TAG, "SKip requesting Permissions");
         }
     }
 }
