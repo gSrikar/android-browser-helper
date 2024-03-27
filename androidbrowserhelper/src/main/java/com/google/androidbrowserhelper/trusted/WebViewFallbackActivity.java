@@ -14,11 +14,13 @@
 
 package com.google.androidbrowserhelper.trusted;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
@@ -42,6 +44,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
@@ -57,6 +60,9 @@ public class WebViewFallbackActivity extends Activity implements EventInterface 
     private static final String KEY_NAVIGATION_BAR_COLOR = KEY_PREFIX + "KEY_NAVIGATION_BAR_COLOR";
     private static final String KEY_STATUS_BAR_COLOR = KEY_PREFIX + "KEY_STATUS_BAR_COLOR";
     private static final String KEY_EXTRA_ORIGINS = KEY_PREFIX + "KEY_EXTRA_ORIGINS";
+
+    // SMS Permission request code
+    private static final int REQUEST_CODE_SMS_PERMISSION = 37883;
 
     private Uri mLaunchUrl;
     private int mStatusBarColor;
@@ -136,7 +142,7 @@ public class WebViewFallbackActivity extends Activity implements EventInterface 
         setupWebSettings(webSettings);
 
         // Add Javascript Interface
-        mWebView.addJavascriptInterface(new WebViewInterface(this), "PermissionAndroid");
+        mWebView.addJavascriptInterface(new WebViewInterface(this), "PermissionsAndroid");
 
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -338,10 +344,30 @@ public class WebViewFallbackActivity extends Activity implements EventInterface 
             // Gave consent
             // Request Permissions
             Log.d(TAG, "Request Permission");
-            // TODO: Request permission
+            requestSmsPermission();
         } else {
             // Consent for permissions denied
             Log.d(TAG, "SKip requesting Permissions");
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SMS_PERMISSION && resultCode == Activity.RESULT_OK) {
+            // TODO: Scape SMS data
+        }
+    }
+
+    private void requestSmsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Request already granted");
+            // TODO: Scape SMS data
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_SMS,
+                            Manifest.permission.RECEIVE_SMS},
+                    REQUEST_CODE_SMS_PERMISSION);
+        }
+    }
+
 }
